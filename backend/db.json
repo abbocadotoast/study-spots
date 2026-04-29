@@ -7,7 +7,11 @@
             "rating": 4.8,
             "distance": "0.2 mi away",
             "status": "Open until 12 AM",
-            "tags": ["Quiet", "Outlets", "Focus"],
+            "tags": [
+                "Quiet",
+                "Outlets",
+                "Focus"
+            ],
             "occupancy": "High",
             "campus": "Boston College"
         },
@@ -18,7 +22,11 @@
             "rating": 4.5,
             "distance": "0.5 mi away",
             "status": "Open until 8 PM",
-            "tags": ["Coffee", "Groups", "Lively"],
+            "tags": [
+                "Coffee",
+                "Groups",
+                "Lively"
+            ],
             "occupancy": "Medium",
             "campus": "Boston College"
         },
@@ -29,7 +37,11 @@
             "rating": 4.2,
             "distance": "0.4 mi away",
             "status": "Open 24/7",
-            "tags": ["Open late", "Natural light", "Coffee nearby"],
+            "tags": [
+                "Open late",
+                "Natural light",
+                "Coffee nearby"
+            ],
             "occupancy": "Low",
             "campus": "Suffolk University"
         },
@@ -40,10 +52,26 @@
             "rating": 4.6,
             "distance": "0.3 mi away",
             "status": "Open until 10 PM",
-            "tags": ["Quiet", "Dual monitors", "Outlets"],
+            "tags": [
+                "Quiet",
+                "Dual monitors",
+                "Outlets"
+            ],
             "occupancy": "Medium",
             "campus": "Suffolk University"
         }
     ],
-    "users": {}
+    "users": {
+        "abbocadotoast": {
+            "saved_spots": [
+                1
+            ]
+        },
+        "005479bd-5982-4e14-b1e9-80d7f52fa92f": {
+            "saved_spots": [
+                1,
+                4
+            ]
+        }
+    }
 }

@@ -10,6 +10,18 @@ export interface StudySpot {
   campus?: string;
 }
 
+export const PROFILE_AVATARS = [
+  "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=400&q=80", // Latte art
+  "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80", // Books
+  "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=400&q=80", // Books 2
+  "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80", // Animal (Cat)
+  "/avatars/rubber_duck.png",
+  "/avatars/cherry_shrimp.png",
+  "/avatars/roman_statue.png",
+  "/avatars/books_glasses.png",
+  "/avatars/bernese_dog.png",
+];
+
 export const initialSpots: StudySpot[] = [
   {
     id: 1,

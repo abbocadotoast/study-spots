@@ -48,7 +48,8 @@ export default function AddSpot() {
     
     // POST data to FastAPI backend
     try {
-      await fetch("http://127.0.0.1:8000/spots", {
+      const backendUrl = `http://${window.location.hostname}:8000`;
+      await fetch(`${backendUrl}/spots`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSpot),
@@ -96,7 +97,7 @@ export default function AddSpot() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="e.g. Main Library 3rd Floor"
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
               />
             </div>
 
@@ -109,7 +110,7 @@ export default function AddSpot() {
                 name="campus"
                 value={formData.campus}
                 onChange={handleChange}
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300 appearance-none"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb] appearance-none"
               >
                 <option value="Boston College">Boston College</option>
                 <option value="Suffolk University">Suffolk University</option>
@@ -126,7 +127,7 @@ export default function AddSpot() {
                 value={formData.image}
                 onChange={handleChange}
                 placeholder="e.g. https://images.unsplash.com/..."
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
               />
             </div>
             
@@ -142,13 +143,13 @@ export default function AddSpot() {
                   value={formData.distance}
                   onChange={handleChange}
                   placeholder="e.g. 0.3 mi away"
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
                 />
               </div>
 
               {/* Status */}
               <div>
-                <label htmlFor="status" className="block text-[14px] font-bold text-slate-700 mb-2">Hours/Status*</label>
+                <label htmlFor="status" className="block text-[14px] font-bold text-slate-700 mb-2">Hours *</label>
                 <input
                   required
                   type="text"
@@ -157,7 +158,7 @@ export default function AddSpot() {
                   value={formData.status}
                   onChange={handleChange}
                   placeholder="e.g. Open until 10 PM"
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
                 />
               </div>
             </div>
@@ -172,8 +173,8 @@ export default function AddSpot() {
                 name="tags"
                 value={formData.tags}
                 onChange={handleChange}
-                placeholder="e.g. Quiet, Outlets, Coffee"
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                placeholder="e.g. Quiet, Free Wifi, Spacious"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
               />
             </div>
             
@@ -187,7 +188,7 @@ export default function AddSpot() {
                     name="occupancy"
                     value={formData.occupancy}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300 appearance-none"
+                    className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb] appearance-none"
                   >
                     <option value="Low">Low (Plenty of seats)</option>
                     <option value="Medium">Medium</option>
@@ -208,7 +209,7 @@ export default function AddSpot() {
                   name="rating"
                   value={formData.rating}
                   onChange={handleChange}
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-blue-100 focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-blue-300"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
                 />
               </div>
             </div>
@@ -217,7 +218,7 @@ export default function AddSpot() {
             <div className="mt-4">
               <button 
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.4)] active:scale-[0.98] flex justify-center items-center gap-2"
+                className="w-full bg-[#0f3915] hover:bg-[#0f3915] text-white font-bold text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16px_rgba(15,57,21,0.4)] active:scale-[0.98] flex justify-center items-center gap-2"
               >
                 Add Study Spot
               </button>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { StudySpot } from '../../lib/data';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabase';
 
 export default function SavedSpots() {
   const router = useRouter();
@@ -13,16 +14,17 @@ export default function SavedSpots() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get username from localStorage
-    const username = localStorage.getItem('username');
-    if (!username) {
-      router.push('/login');
-      return;
-    }
-
     const fetchSavedSpots = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        router.push('/login');
+        return;
+      }
+
       try {
-        const response = await fetch(`http://127.0.0.1:8000/users/${username}/saved`);
+        const backendUrl = `http://${window.location.hostname}:8000`;
+        const response = await fetch(`${backendUrl}/users/${session.user.id}/saved`);
         const data = await response.json();
         setSpots(data);
       } catch (err) {
@@ -61,7 +63,7 @@ export default function SavedSpots() {
         ) : (
           <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {spots.map((spot) => (
-              <div key={spot.id} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-blue-200 hover:shadow-md transition-all group overflow-hidden">
+              <div key={spot.id} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden">
                 {/* Image Section */}
                 <div className="relative h-48 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
                   <Image src={spot.image} alt={spot.name} fill className="object-cover" unoptimized />
@@ -77,7 +79,7 @@ export default function SavedSpots() {
                   <div className="flex items-center text-slate-500 text-[13px] md:text-[14px] font-semibold mb-4 gap-3">
                     <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400" /> {spot.distance}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
+                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#dae2cb] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
                   </div>
                 </div>
               </div>
