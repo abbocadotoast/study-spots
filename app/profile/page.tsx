@@ -36,7 +36,7 @@ export default function Profile() {
     };
     fetchUser();
   }, [router]);
-
+  
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
@@ -59,12 +59,24 @@ export default function Profile() {
         updates.email = email;
       }
 
-      const { error } = await supabase.auth.updateUser(updates);
+      const { data, error } = await supabase.auth.updateUser(updates);
+
+      console.log('Update result:', data, error); // check this in your browser console
+
 
       if (error) throw error;
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       if (password) setPassword(''); // Clear password field after successful update
+
+      const { data: { user: updatedUser } } = await supabase.auth.getUser();
+
+      if (updatedUser) {
+        setUsername(updatedUser.user_metadata?.username || '');
+        setCampus(updatedUser.user_metadata?.campus || '');
+        setAvatarUrl(updatedUser.user_metadata?.avatar_url || PROFILE_AVATARS[0]);
+        setEmail(updatedUser.email || '');
+      }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'Failed to update profile.' });
     } finally {

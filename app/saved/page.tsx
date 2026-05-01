@@ -37,6 +37,21 @@ export default function SavedSpots() {
     fetchSavedSpots();
   }, [router]);
 
+  const handleUnsave = async (spotId: number) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return;
+
+    try {
+      const backendUrl = `http://${window.location.hostname}:8000`;
+      await fetch(`${backendUrl}/users/${session.user.id}/saved/${spotId}`, {
+        method: 'DELETE'
+      });
+      setSpots(prev => prev.filter(s => s.id !== spotId));
+    } catch (err) {
+      console.error("Failed to unsave spot", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F4F7FB] text-slate-800 font-sans pb-10">
       {/* Header */}
@@ -70,6 +85,15 @@ export default function SavedSpots() {
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>
+                  </div>
+                  
+                  <div className="absolute bottom-3 right-3">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleUnsave(spot.id); }} 
+                      className="h-10 w-10 bg-[#0f3915] text-white backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
+                    >
+                      <Bookmark size={18} strokeWidth={2.5} fill="currentColor"/>
+                    </button>
                   </div>
                 </div>
                 

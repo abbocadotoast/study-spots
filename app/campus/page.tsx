@@ -5,17 +5,51 @@ import { ArrowLeft, MapPin, Clock, Star, Map as MapIcon, Bookmark } from 'lucide
 import Link from 'next/link';
 import Image from 'next/image';
 import { StudySpot } from '../../lib/data';
-
+import { supabase } from '../../lib/supabase';
+import { useRouter } from 'next/navigation';
 export default function Campus() {
+  const router = useRouter();
   const [spots, setSpots] = useState<StudySpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCampus, setSelectedCampus] = useState('Boston College');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [savedSpotIds, setSavedSpotIds] = useState<number[]>([]);
 
   const campuses = ['Boston College', 'Suffolk University'];
 
   useEffect(() => {
-    const fetchSpots = async () => {
+    const fetchSpotsAndUser = async () => {
       setLoading(true);
+      
+      // Fetch session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUserId(session.user.id);
+        setUsername(session.user.user_metadata?.username || session.user.email);
+        
+        // Fetch saved spots
+        try {
+          const savedRes = await fetch(`http://127.0.0.1:8000/users/${session.user.id}/saved`);
+          const savedData = await savedRes.json();
+          if (Array.isArray(savedData)) {
+            setSavedSpotIds(savedData.map((s: any) => s.id));
+          }
+        } catch (e) {}
+      } else {
+        const localUser = localStorage.getItem('username');
+        setUsername(localUser);
+        if (localUser) {
+           try {
+            const savedRes = await fetch(`http://127.0.0.1:8000/users/${localUser}/saved`);
+            const savedData = await savedRes.json();
+            if (Array.isArray(savedData)) {
+              setSavedSpotIds(savedData.map((s: any) => s.id));
+            }
+          } catch (e) {}
+        }
+      }
+
       try {
         const response = await fetch("http://127.0.0.1:8000/spots");
         const data = await response.json();
@@ -27,8 +61,35 @@ export default function Campus() {
       }
     };
 
-    fetchSpots();
+    fetchSpotsAndUser();
   }, []);
+
+  const handleBookmark = async (spotId: number) => {
+    const identifier = userId || username;
+    
+    if (!identifier) {
+      router.push('/login');
+      return;
+    }
+
+    const isSaved = savedSpotIds.includes(spotId);
+    
+    try {
+      if (isSaved) {
+        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+          method: 'DELETE'
+        });
+        setSavedSpotIds(prev => prev.filter(id => id !== spotId));
+      } else {
+        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+          method: 'POST'
+        });
+        setSavedSpotIds(prev => [...prev, spotId]);
+      }
+    } catch (err) {
+      console.error("Failed to toggle bookmark", err);
+    }
+  };
 
   // Filter spots based on the selected campus
   // We handle the edge case where older spots might not have a "campus" field,
@@ -89,6 +150,19 @@ export default function Campus() {
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>
+                  </div>
+
+                  <div className={`absolute bottom-3 right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleBookmark(spot.id); }} 
+                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all ${
+                        savedSpotIds.includes(spot.id) 
+                          ? 'bg-[#0f3915] text-white' 
+                          : 'bg-white/80 text-slate-600 hover:bg-white hover:text-[#0f3915]'
+                      }`}
+                    >
+                      <Bookmark size={18} strokeWidth={2.5} fill={savedSpotIds.includes(spot.id) ? "currentColor" : "none"}/>
+                    </button>
                   </div>
                 </div>
 

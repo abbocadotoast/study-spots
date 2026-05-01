@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, MapPin, Clock, Star, Map as MapIcon, Bookmark, Home as HomeIcon, User, Filter, Navigation, Plus, GraduationCap } from 'lucide-react';
 import { initialSpots, StudySpot } from '../lib/data';
+import { supabase } from '../lib/supabase';
 
 export default function Home() {
   const router = useRouter();
@@ -14,13 +15,59 @@ export default function Home() {
   const [studySpots, setStudySpots] = useState<StudySpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [savedSpotIds, setSavedSpotIds] = useState<number[]>([]);
 
-  // Fetch spots from backend
+  // Fetch spots from backend and sync with Supabase session
   useEffect(() => {
-    const user = localStorage.getItem('username');
-    setUsername(user);
-    
-    const fetchSpots = async () => {
+    const fetchUserAndSpots = async () => {
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User');
+        setAvatarUrl(session.user.user_metadata?.avatar_url || null);
+        setUserId(session.user.id);
+
+        // Fetch saved spot IDs for this user
+        try {
+          const savedRes = await fetch(`http://127.0.0.1:8000/users/${session.user.id}/saved`);
+          const savedData = await savedRes.json();
+          if (Array.isArray(savedData)) {
+            setSavedSpotIds(savedData.map((s: any) => s.id));
+          }
+        } catch (e) {
+          console.error("Failed to fetch saved spots", e);
+        }
+      } else {
+        // Fallback to localStorage for guest/legacy users
+        const localUser = localStorage.getItem('username');
+        setUsername(localUser);
+        if (localUser) {
+           try {
+            const savedRes = await fetch(`http://127.0.0.1:8000/users/${localUser}/saved`);
+            const savedData = await savedRes.json();
+            if (Array.isArray(savedData)) {
+              setSavedSpotIds(savedData.map((s: any) => s.id));
+            }
+          } catch (e) {}
+        }
+      }
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+          setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User');
+          setAvatarUrl(session.user.user_metadata?.avatar_url || null);
+          setUserId(session.user.id);
+        } else {
+          setUsername(null);
+          setAvatarUrl(null);
+          setUserId(null);
+          setSavedSpotIds([]);
+        }
+      });
+
       try {
         const response = await fetch("http://127.0.0.1:8000/spots");
         const data = await response.json();
@@ -30,8 +77,11 @@ export default function Home() {
       } finally {
         setLoading(false);
       }
+
+      return () => subscription.unsubscribe();
     };
-    fetchSpots();
+    
+    fetchUserAndSpots();
   }, []);
 
   // Filter study spots based on activeFilter
@@ -41,18 +91,32 @@ export default function Home() {
   });
 
   const handleBookmark = async (spotId: number) => {
-    if (!username) {
+    // Prefer Supabase ID, fallback to username for legacy
+    const identifier = userId || username;
+    
+    if (!identifier) {
       router.push('/login');
       return;
     }
-    // Call fast API backend to save the spot
+
+    const isSaved = savedSpotIds.includes(spotId);
+    
     try {
-      await fetch(`http://127.0.0.1:8000/users/${username}/saved/${spotId}`, {
-        method: 'POST'
-      });
-      router.push('/saved');
+      if (isSaved) {
+        // Unsave logic
+        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+          method: 'DELETE'
+        });
+        setSavedSpotIds(prev => prev.filter(id => id !== spotId));
+      } else {
+        // Save logic
+        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+          method: 'POST'
+        });
+        setSavedSpotIds(prev => [...prev, spotId]);
+      }
     } catch (err) {
-      console.error("Failed to save spot", err);
+      console.error("Failed to toggle bookmark", err);
     }
   };
 
@@ -96,9 +160,13 @@ export default function Home() {
             </div>
             {/* Mobile User Avatar */}
             <button onClick={handleProfileClick} className="md:hidden flex items-center gap-3 text-slate-700 font-bold hover:opacity-80 transition-opacity">
-              <div className="h-10 w-10 bg-gradient-to-tr from-[#0f3915] to-[#0f4f15] rounded-full shadow-md text-white flex items-center justify-center p-0.5">
-               <div className="bg-white/20 w-full h-full rounded-full flex items-center justify-center">
-                 <User size={18} className="text-white" strokeWidth={2.5} />
+              <div className="h-10 w-10 bg-gradient-to-tr from-[#0f3915] to-[#0f4f15] rounded-full shadow-md text-white flex items-center justify-center p-0.5 overflow-hidden">
+               <div className="bg-white/20 w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+                 {avatarUrl ? (
+                   <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                 ) : (
+                   <User size={18} className="text-white" strokeWidth={2.5} />
+                 )}
                </div>
               </div>
             </button>
@@ -128,9 +196,13 @@ export default function Home() {
             <div className="h-6 w-px bg-slate-200"></div>
             <button onClick={handleProfileClick} className="flex items-center gap-3 text-slate-700 font-bold hover:opacity-80 transition-opacity">
               <span>{username ? username : 'Guest'}</span>
-              <div className="h-10 w-10 bg-gradient-to-tr from-[#0f3915] to-[#0f4f15] rounded-full shadow-md text-white flex items-center justify-center p-0.5">
-               <div className="bg-white/20 w-full h-full rounded-full flex items-center justify-center">
-                 <User size={18} className="text-white" strokeWidth={2.5} />
+              <div className="h-10 w-10 bg-gradient-to-tr from-[#0f3915] to-[#0f4f15] rounded-full shadow-md text-white flex items-center justify-center p-0.5 overflow-hidden">
+               <div className="bg-white/20 w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+                 {avatarUrl ? (
+                   <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                 ) : (
+                   <User size={18} className="text-white" strokeWidth={2.5} />
+                 )}
                </div>
               </div>
             </button>
@@ -193,9 +265,16 @@ export default function Home() {
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>
                   </div>
                   
-                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={(e) => { e.stopPropagation(); handleBookmark(spot.id); }} className="h-10 w-10 bg-[#d0cffc7] backdrop-blur-md rounded-full shadow-lg flex items-center justify-center text-[e6f2e7] hover:text-[#e6f2e7] transition-colors">
-                      <Bookmark size={18} strokeWidth={2.5}/>
+                  <div className={`absolute bottom-3 right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleBookmark(spot.id); }} 
+                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all ${
+                        savedSpotIds.includes(spot.id) 
+                          ? 'bg-[#0f3915] text-white' 
+                          : 'bg-white/80 text-slate-600 hover:bg-white hover:text-[#0f3915]'
+                      }`}
+                    >
+                      <Bookmark size={18} strokeWidth={2.5} fill={savedSpotIds.includes(spot.id) ? "currentColor" : "none"}/>
                     </button>
                   </div>
                 </div>
