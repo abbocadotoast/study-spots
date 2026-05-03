@@ -215,22 +215,27 @@ export default function Home() {
         
         {/* Left Column: Spots Feed */}
         <div className="w-full lg:w-[500px] xl:w-[580px] shrink-0 flex flex-col">
+
           {/* Quick Filters */}
 
-           <div className="flex overflow-x-auto hide-scrollbar gap-2.5 mb-6 lg:mb-8 pb-3 -mx-5 px-5 md:mx-0 md:px-0 snap-x">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`snap-start whitespace-nowrap px-4 md:px-5 py-2.5 rounded-2xl text-[14px] font-bold transition-all ${
-                  activeFilter === filter
-                    ? 'bg-[#0f4f15] text-white shadow-[#e6f2e7]'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-200/60'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
+          <div className="relative">
+            <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-16 z-10 bg-gradient-to-r from-transparent to-[#f4f7fb] hidden md:block" />
+
+            <div className="flex overflow-x-auto hide-scrollbar gap-2.5 mb-6 lg:mb-8 pb-3 -mx-5 px-5 md:mx-0 md:px-0 snap-x">
+              {filters.map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`snap-start whitespace-nowrap px-4 md:px-5 py-2.5 rounded-2xl text-[14px] font-bold transition-all ${
+                    activeFilter === filter
+                      ? 'bg-[#0f4f15] text-white shadow-[#e6f2e7]'
+                      : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-200/60'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Section title */}
