@@ -1,64 +1,45 @@
 {
     "spots": [
         {
-            "id": 1,
-            "name": "Main Library - 4th Floor",
-            "image": "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=800&q=80",
-            "rating": 4.8,
-            "distance": "0.2 mi away",
-            "status": "Open until 12 AM",
+            "name": "Massachusetts State House Library",
+            "image": "https://imgs.search.brave.com/gluiDJHrE5YC_MzJuqk4d-4TaVDC_WkU6DpG-5rKuPU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9m/L2ZhL1N0YXRlTGli/cmFyeVJlYWRpbmdS/b29tMjAxOS5qcGc",
+            "rating": 5.0,
+            "location": "24 Beacon St, Boston, MA",
+            "status": "Tues - Fri: 9:00 AM - 5:00 PM",
             "tags": [
-                "Quiet",
-                "Outlets",
-                "Focus"
+                "cool",
+                "lovely",
+                "One or two people"
             ],
-            "occupancy": "High",
-            "campus": "Boston College"
+            "occupancy": "Medium",
+            "campus": "Sattler College",
+            "lat": 42.358602,
+            "lng": -71.0638751,
+            "vibes": "very nice",
+            "info": "the library is super cool, i love this  place",
+            "id": 5
         },
         {
-            "id": 2,
-            "name": "Campus Coffee Roasters",
-            "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+            "name": "Jaho Coffee Roaster and Wine Bar - Back Bay",
+            "image": "https://imgs.search.brave.com/xm6AySGCmh7z3G-0h7s_zHXiNV_cZiSyidkp34nTtMY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y29ybmVyLmluYy91/Z2MvMzNlZjRlOTEt/NWUxMC00NWFkLWE2/YjEtNWVmNjM5NWMw/ZGMzLTE3Mzc1OTQ1/MTkzODEtMC5qcGVn",
             "rating": 4.5,
-            "distance": "0.5 mi away",
-            "status": "Open until 8 PM",
+            "location": "116 Huntington Ave, Boston, MA",
+            "status": "Mon - Fri: 6:30 A.M - 11:00 P.M. Sat - Sun: 7:00 A.M - 11:00 P.M.",
             "tags": [
-                "Coffee",
-                "Groups",
-                "Lively"
-            ],
-            "occupancy": "Medium",
-            "campus": "Boston College"
-        },
-        {
-            "id": 3,
-            "name": "Science Building Atrium",
-            "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
-            "rating": 4.2,
-            "distance": "0.4 mi away",
-            "status": "Open 24/7",
-            "tags": [
-                "Open late",
-                "Natural light",
-                "Coffee nearby"
-            ],
-            "occupancy": "Low",
-            "campus": "Suffolk University"
-        },
-        {
-            "id": 4,
-            "name": "Engineering Computer Lab",
-            "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80",
-            "rating": 4.6,
-            "distance": "0.3 mi away",
-            "status": "Open until 10 PM",
-            "tags": [
+                "Comfy",
+                "Good for writing",
                 "Quiet",
-                "Dual monitors",
-                "Outlets"
+                "Free Wifi",
+                "Outlets",
+                "One or two people"
             ],
             "occupancy": "Medium",
-            "campus": "Suffolk University"
+            "campus": "None",
+            "lat": 42.3467494,
+            "lng": -71.0796207,
+            "vibes": "Calm, Lovely",
+            "info": "They have nice big tables and really comfy chairs. The coffee and drinks are always incredible, but the customer service is not very good. They are great for late nights as they are always open until 11 at night. They can be vey busy, especially in the afternoon. ",
+            "id": 6
         }
     ],
     "users": {
@@ -74,7 +55,10 @@
             ]
         },
         "ef17d644-f421-43f9-8af2-2706faa4d2ce": {
-            "saved_spots": []
+            "saved_spots": [
+                5,
+                1
+            ]
         }
     }
 }

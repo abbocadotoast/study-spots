@@ -78,10 +78,10 @@ export default function SavedSpots() {
         ) : (
           <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {spots.map((spot) => (
-              <div key={spot.id} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden">
+              <Link key={spot.id} href={`/spots/${spot.id}`} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden block">
                 {/* Image Section */}
                 <div className="relative h-48 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
-                  <Image src={spot.image} alt={spot.name} fill className="object-cover" unoptimized />
+                  <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized />
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>
@@ -89,8 +89,8 @@ export default function SavedSpots() {
                   
                   <div className="absolute bottom-3 right-3">
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleUnsave(spot.id); }} 
-                      className="h-10 w-10 bg-[#0f3915] text-white backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUnsave(spot.id); }} 
+                      className="h-10 w-10 bg-[#0f3915] text-white backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 border border-[#e6f2e7]"
                     >
                       <Bookmark size={18} strokeWidth={2.5} fill="currentColor"/>
                     </button>
@@ -99,14 +99,14 @@ export default function SavedSpots() {
                 
                 {/* Info Section */}
                 <div className="px-2 pb-2">
-                  <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 mb-2 pr-4">{spot.name}</h3>
+                  <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 mb-2 pr-4 group-hover:text-[#0f3915] transition-colors">{spot.name}</h3>
                   <div className="flex items-center text-slate-500 text-[13px] md:text-[14px] font-semibold mb-4 gap-3">
-                    <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400" /> {spot.distance}</span>
+                    <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400" /> {spot.location}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#dae2cb] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
+                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#e6f2e7] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

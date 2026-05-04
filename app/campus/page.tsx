@@ -143,7 +143,7 @@ export default function Campus() {
         ) : (
           <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSpots.map((spot) => (
-              <div key={spot.id} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden">
+              <Link key={spot.id} href={`/spots/${spot.id}`} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden block">
                 {/* Image Section */}
                 <div className="relative h-48 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
                   <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized />
@@ -154,8 +154,8 @@ export default function Campus() {
 
                   <div className={`absolute bottom-3 right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleBookmark(spot.id); }} 
-                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all ${
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleBookmark(spot.id); }} 
+                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all border border-[#e6f2e7] ${
                         savedSpotIds.includes(spot.id) 
                           ? 'bg-[#0f3915] text-white' 
                           : 'bg-white/80 text-slate-600 hover:bg-white hover:text-[#0f3915]'
@@ -168,11 +168,11 @@ export default function Campus() {
 
                 {/* Info Section */}
                 <div className="px-2 pb-2">
-                  <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 mb-2 pr-4">{spot.name}</h3>
+                  <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 mb-2 pr-4 group-hover:text-[#0f3915] transition-colors">{spot.name}</h3>
                   <div className="flex items-center text-slate-500 text-[13px] md:text-[14px] font-semibold mb-4 gap-3">
-                    <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400" /> {spot.distance}</span>
+                    <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400" /> {spot.location}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#dae2cb] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
+                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#e6f2e7] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {spot.tags.map(tag => (
@@ -182,7 +182,7 @@ export default function Campus() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

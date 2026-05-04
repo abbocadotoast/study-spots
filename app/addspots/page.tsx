@@ -13,37 +13,80 @@ export default function AddSpot() {
     name: '',
     image: '',
     rating: 5,
-    distance: '',
+    location: '',
     status: '',
     tags: '',
     occupancy: 'Medium',
-    campus: 'Boston College'
+    campus: 'None',
+    vibes: '',
+    info: ''
   });
+
+  // Amenity toggles
+  const [amenities, setAmenities] = useState({
+    wifi: false,
+    outlets: false,
+    capacity: 'One or two people' // 'Good for groups' or 'One or two people'
+  });
+
+  const [isGeocoding, setIsGeocoding] = useState(false);
+
+  const getCoordinates = async (address: string) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        };
+      }
+    } catch (err) {
+      console.error("Geocoding failed", err);
+    }
+    return { lat: 42.3601, lng: -71.0589 }; // Default to Boston if failed
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsGeocoding(true);
     
     // Process tags from comma separated string to array
-    const processedTags = formData.tags
+    const manualTags = formData.tags
       .split(',')
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
+    
+    // Add amenity tags
+    const amenityTags = [];
+    if (amenities.wifi) amenityTags.push('Free Wifi');
+    if (amenities.outlets) amenityTags.push('Outlets');
+    amenityTags.push(amenities.capacity);
+
+    const processedTags = [...new Set([...manualTags, ...amenityTags])];
       
     // Set default image if none provided
     const image = formData.image.trim() !== '' 
       ? formData.image 
       : 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80'; 
       
+    // Geocoding
+    const coords = await getCoordinates(formData.location);
+
     // Create new spot payload matching FastAPI schema
     const newSpot = {
       name: formData.name,
       image: image,
       rating: Number(formData.rating),
-      distance: formData.distance,
+      location: formData.location,
       status: formData.status,
       tags: processedTags.length > 0 ? processedTags : ['Study'],
       occupancy: formData.occupancy,
-      campus: formData.campus
+      campus: formData.campus,
+      lat: coords.lat,
+      lng: coords.lng,
+      vibes: formData.vibes,
+      info: formData.info
     };
     
     // POST data to FastAPI backend
@@ -59,12 +102,18 @@ export default function AddSpot() {
     } catch (err) {
       console.error("Failed to add spot to backend", err);
       alert("Failed to add spot. Ensure backend is running.");
+    } finally {
+      setIsGeocoding(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAmenityToggle = (amenity: string, value: any) => {
+    setAmenities(prev => ({ ...prev, [amenity]: value }));
   };
 
   return (
@@ -96,8 +145,8 @@ export default function AddSpot() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="e.g. Main Library 3rd Floor"
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                placeholder="e.g. Boston Athenaeum"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
               />
             </div>
 
@@ -110,9 +159,11 @@ export default function AddSpot() {
                 name="campus"
                 value={formData.campus}
                 onChange={handleChange}
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb] appearance-none"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7] appearance-none"
               >
+                <option value="None">None</option>
                 <option value="Boston College">Boston College</option>
+                <option value="Sattler College">Sattler College</option>
                 <option value="Suffolk University">Suffolk University</option>
               </select>
             </div>
@@ -127,24 +178,92 @@ export default function AddSpot() {
                 value={formData.image}
                 onChange={handleChange}
                 placeholder="e.g. https://images.unsplash.com/..."
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
               />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Distance */}
+            <div className="grid grid-cols-1 gap-6">
+              {/* Location */}
               <div>
-                <label htmlFor="distance" className="block text-[14px] font-bold text-slate-700 mb-2">Distance*</label>
+                <label htmlFor="location" className="block text-[14px] font-bold text-slate-700 mb-2">Address / Location*</label>
                 <input
                   required
                   type="text"
-                  id="distance"
-                  name="distance"
-                  value={formData.distance}
+                  id="location"
+                  name="location"
+                  value={formData.location}
                   onChange={handleChange}
-                  placeholder="e.g. 0.3 mi away"
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                  placeholder="e.g. 700 Boylston St, Boston, MA"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
                 />
+              </div>
+
+              {/* Amenities */}
+              <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                <h3 className="text-[14px] font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  Key Amenities
+                </h3>
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-semibold text-slate-600">Free Wifi</span>
+                    <div className="flex bg-white p-1 rounded-xl border border-[#e6f2e7] shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('wifi', true)}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all border border-transparent ${amenities.wifi ? 'bg-[#0f3915] text-white border-[#e6f2e7] shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('wifi', false)}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all border border-transparent ${!amenities.wifi ? 'bg-[#0f3915] text-white border-[#e6f2e7] shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-semibold text-slate-600">Good Outlets</span>
+                    <div className="flex bg-white p-1 rounded-xl border border-[#e6f2e7] shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('outlets', true)}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all ${amenities.outlets ? 'bg-[#0f3915] text-white shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('outlets', false)}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all ${!amenities.outlets ? 'bg-[#0f3915] text-white shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-semibold text-slate-600">Capacity</span>
+                    <div className="flex bg-white p-1 rounded-xl border border-[#e6f2e7] shadow-sm">
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('capacity', 'Good for groups')}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all border border-transparent ${amenities.capacity === 'Good for groups' ? 'bg-[#0f3915] text-white border-[#e6f2e7] shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Groups
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAmenityToggle('capacity', 'One or two people')}
+                        className={`px-4 py-1.5 rounded-lg text-[13px] font-bold transition-all border border-transparent ${amenities.capacity === 'One or two people' ? 'bg-[#0f3915] text-white border-[#e6f2e7] shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Individual
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Status */}
@@ -157,8 +276,8 @@ export default function AddSpot() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  placeholder="e.g. Open until 10 PM"
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                  placeholder="e.g. Mon - Fri: 8AM- 11PM"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
                 />
               </div>
             </div>
@@ -174,7 +293,7 @@ export default function AddSpot() {
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="e.g. Quiet, Free Wifi, Spacious"
-                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
               />
             </div>
             
@@ -188,7 +307,7 @@ export default function AddSpot() {
                     name="occupancy"
                     value={formData.occupancy}
                     onChange={handleChange}
-                    className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb] appearance-none"
+                    className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7] appearance-none"
                   >
                     <option value="Low">Low (Plenty of seats)</option>
                     <option value="Medium">Medium</option>
@@ -209,7 +328,36 @@ export default function AddSpot() {
                   name="rating"
                   value={formData.rating}
                   onChange={handleChange}
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#dae2cb] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#dae2cb]"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
+                />
+              </div>
+            </div>
+
+            {/* Vibes & Info */}
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label htmlFor="vibes" className="block text-[14px] font-bold text-slate-700 mb-2">The Vibe</label>
+                <input
+                  type="text"
+                  id="vibes"
+                  name="vibes"
+                  value={formData.vibes}
+                  onChange={handleChange}
+                  placeholder="e.g. Minimalist, bustling, and cozy"
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="info" className="block text-[14px] font-bold text-slate-700 mb-2">About this spot</label>
+                <textarea
+                  id="info"
+                  name="info"
+                  rows={4}
+                  value={formData.info}
+                  onChange={handleChange}
+                  placeholder="e.g. This library is known for its beautiful architecture and strictly quiet reading rooms. Perfect for deep focus..."
+                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7] resize-none"
                 />
               </div>
             </div>
@@ -218,9 +366,15 @@ export default function AddSpot() {
             <div className="mt-4">
               <button 
                 type="submit"
-                className="w-full bg-[#0f3915] hover:bg-[#0f3915] text-white font-bold text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16px_rgba(15,57,21,0.4)] active:scale-[0.98] flex justify-center items-center gap-2"
+                disabled={isGeocoding}
+                className="w-full bg-[#0f3915] hover:bg-[#0f3915] text-white font-bold text-[16px] py-4 rounded-2xl transition-all shadow-[0_4px_12_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16_rgba(15,57,21,0.4)] active:scale-[0.98] flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#e6f2e7]"
               >
-                Add Study Spot
+                {isGeocoding ? (
+                  <>
+                    <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Geocoding location...
+                  </>
+                ) : 'Add Study Spot'}
               </button>
             </div>
             

@@ -31,26 +31,41 @@ def save_db(data):
     with open(DB_PATH, "w") as f:
         json.dump(data, f, indent=4)
 
-# Pydantic schema for validation, no over-engineering here
+# Pydantic schema for validation
 class Spot(BaseModel):
     name: str
     image: str
     rating: float
-    distance: str
+    location: str
     status: str
     tags: List[str]
     occupancy: str
-    campus: Optional[str]
+    campus: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    vibes: Optional[str] = ""
+    info: Optional[str] = ""
 
+# Retrieve all study spots available in the database.
 @app.get("/spots")
 def get_spots():
-    """Retrieve all study spots available in the database."""
     db = load_db()
     return db.get("spots", [])
 
+# Retrieves a single study spot by its ID.
+@app.get("/spots/{spot_id}")
+def get_spot(spot_id: int):
+    db = load_db()
+    spots = db.get("spots", [])
+    spot = next((s for s in spots if s["id"] == spot_id), None)
+    if not spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+    return spot
+
+
+# Adds a study spot to the website data globally.
 @app.post("/spots")
 def create_spot(spot: Spot):
-    """Add a new study spot to the website data globally."""
     db = load_db()
     spots = db.setdefault("spots", [])
     
@@ -63,9 +78,9 @@ def create_spot(spot: Spot):
     save_db(db)
     return new_spot
 
+# Adds a bookmark for a specific user to their saved list.
 @app.post("/users/{username}/saved/{spot_id}")
 def save_spot_for_user(username: str, spot_id: int):
-    """Adds a bookmark for a specific user to their saved list."""
     db = load_db()
     users = db.setdefault("users", {})
     user = users.setdefault(username, {"saved_spots": []})
@@ -76,9 +91,9 @@ def save_spot_for_user(username: str, spot_id: int):
     save_db(db)
     return {"status": "success", "saved_spots": user["saved_spots"]}
 
+# Removes a bookmark from a user's saved list.
 @app.delete("/users/{username}/saved/{spot_id}")
 def remove_spot_for_user(username: str, spot_id: int):
-    """Removes a bookmark from a user's saved list."""
     db = load_db()
     users = db.setdefault("users", {})
     user = users.setdefault(username, {"saved_spots": []})
@@ -89,9 +104,9 @@ def remove_spot_for_user(username: str, spot_id: int):
     save_db(db)
     return {"status": "success", "saved_spots": user["saved_spots"]}
 
+# Gets the spot objects for all spots a user has saved.
 @app.get("/users/{username}/saved")
 def get_saved_spots(username: str):
-    """Gets the hydrated spot objects for all spots a user has saved."""
     db = load_db()
     users = db.get("users", {})
     # Extract list of IDs the user bookmarked

@@ -4,9 +4,15 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Search, MapPin, Clock, Star, Map as MapIcon, Bookmark, Home as HomeIcon, User, Filter, Navigation, Plus, GraduationCap } from 'lucide-react';
 import { initialSpots, StudySpot } from '../lib/data';
 import { supabase } from '../lib/supabase';
+
+const MapComponent = dynamic(() => import('../components/MapComponent'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-100 animate-pulse rounded-[2.5rem]" />
+});
 
 export default function Home() {
   const router = useRouter();
@@ -136,6 +142,7 @@ export default function Home() {
     }
   };
 
+
   const filters = ['All', 'Quiet', 'Good for groups', 'Open late', 'Outlets', 'Coffee nearby'];
 
   return (
@@ -253,7 +260,7 @@ export default function Home() {
             {loading ? (
               <div className="text-slate-500 font-medium py-4 px-2">Loading spots...</div>
             ) : filteredSpots.map((spot) => (
-              <div key={spot.id} className="bg-white rounded-[2rem] p-3.5 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-200/50 hover:border-blue-200 hover:shadow-md transition-all group cursor-pointer active:scale-[0.98] sm:active:scale-[0.99]">
+              <Link key={spot.id} href={`/spots/${spot.id}`} id={`spot-${spot.id}`} className="bg-white rounded-[2rem] p-3.5 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-200/50 hover:border-[#0f3915]/20 hover:shadow-md transition-all group cursor-pointer active:scale-[0.98] sm:active:scale-[0.99] scroll-mt-24 block">
                 {/* Image Section */}
                 <div className="relative h-48 md:h-52 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
                   <Image 
@@ -267,13 +274,13 @@ export default function Home() {
                   {/* Badges overlaying image */}
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                    <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>
+                    <span className="text-[13px] font-bold text-slate-800">{spot.rating.toFixed(1)}</span>
                   </div>
                   
                   <div className={`absolute bottom-3 right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); handleBookmark(spot.id); }} 
-                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all ${
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleBookmark(spot.id); }} 
+                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all border border-[#e6f2e7] ${
                         savedSpotIds.includes(spot.id) 
                           ? 'bg-[#0f3915] text-white' 
                           : 'bg-white/80 text-slate-600 hover:bg-white hover:text-[#0f3915]'
@@ -287,25 +294,27 @@ export default function Home() {
                 {/* Info Section for quick scanning */}
                 <div className="px-2 pb-2">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 pr-4">{spot.name}</h3>
+                    <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 pr-4 group-hover:text-[#0f3915] transition-colors">{spot.name}</h3>
                   </div>
                   
                   <div className="flex items-center text-slate-500 text-[13px] md:text-[14px] font-semibold mb-4 gap-3">
-                    <span className="flex items-center gap-1.5"><MapPin size={15} className="text-slate-400 group-hover:text-blue-500 transition-colors"/> {spot.distance}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
+                    <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#e6f2e7] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
+                    <span className="flex items-center gap-1.5"><MapPin size={14} /> {spot.location}</span>
                   </div>
 
                   {/* Clear tags */}
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {spot.tags.map(tag => (
+                    {spot.tags.slice(0, 3).map(tag => (
                       <span key={tag} className="bg-slate-100 text-slate-600 text-[12px] md:text-[13px] font-bold px-3 py-1.5 rounded-[12px]">
                         {tag}
                       </span>
                     ))}
+                    {spot.tags.length > 3 && (
+                      <span className="text-slate-400 text-[12px] font-bold py-1.5">+{spot.tags.length - 3}</span>
+                    )}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
             {!loading && filteredSpots.length === 0 && (
               <div className="text-slate-500 font-medium py-4 px-2 text-center bg-white rounded-[2rem] border border-slate-200/50 p-6">
@@ -317,19 +326,7 @@ export default function Home() {
 
         {/* Right Column: Desktop Map Panel */}
         <div className="hidden lg:block flex-1 h-[calc(100vh-140px)] sticky top-[108px]">
-          <div className="w-full h-full bg-slate-200 rounded-[2.5rem] overflow-hidden border-[6px] border-white shadow-xl relative cursor-grab">
-            {/* Visual map placeholder */}
-            <Image 
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80" 
-              alt="Map View" 
-              fill 
-              className="object-cover opacity-90 saturate-50" 
-              unoptimized 
-            />
-            {/* Add an overlay to match the brand color slightly */}
-            <div className="absolute inset-0 bg-[#F4F7FB]/40 mix-blend-overlay pointer-events-none"></div>
-
-          </div>
+          <MapComponent spots={studySpots} />
         </div>
       </main>
 
