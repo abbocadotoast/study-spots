@@ -20,11 +20,11 @@ app.add_middleware(
 )
 
 # Initialize Supabase client
-SUPABASE_URL: str = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY: str = os.environ.get("SUPABASE_KEY")
+SUPABASE_URL: str = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+SUPABASE_KEY: str = os.environ.get("SUPABASE_KEY") or os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY environment variables")
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY environment variables in Vercel")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
