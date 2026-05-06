@@ -85,18 +85,18 @@ export default function Profile() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center font-sans text-slate-500 font-medium">Loading profile...</div>;
+    return <div className="min-h-screen bg-[#f4f7fb] flex items-center justify-center font-sans text-slate-500 font-medium">Loading profile...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB] text-slate-800 font-sans flex flex-col pt-12 md:pt-20 px-6 pb-20">
+    <div className="min-h-screen bg-[#f4f7fb] text-slate-800 font-sans flex flex-col pt-12 md:pt-20 px-6 pb-20">
       <div className="max-w-4xl w-full mx-auto">
         {/* Header Actions */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="inline-flex items-center justify-center h-10 w-10 bg-white hover:bg-slate-50 text-slate-600 rounded-full shadow-sm transition-colors border border-slate-200/60">
             <ArrowLeft size={18} strokeWidth={2.5}/>
           </Link>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Your Profile</h1>
+          <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Your Profile</h1>
           <div className="w-10"></div> {/* Spacer for alignment */}
         </div>
 
@@ -115,7 +115,7 @@ export default function Profile() {
                 <Bookmark className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5}/>
               </div>
               <div className="text-left md:text-center">
-                <h3 className="font-bold text-slate-800 text-[14px] md:text-[16px]">Saved Spots</h3>
+                <h3 className="font-bold text-slate-800 text-[13px] md:text-[16px]">Saved Spots</h3>
                 <p className="text-slate-500 text-[12px] md:text-[13px] font-medium hidden md:block">View your bookmarks</p>
               </div>
             </Link>
@@ -125,7 +125,7 @@ export default function Profile() {
                 <Plus className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5}/>
               </div>
               <div className="text-left md:text-center">
-                <h3 className="font-bold text-slate-800 text-[14px] md:text-[16px]">Add a Spot</h3>
+                <h3 className="font-bold text-slate-800 text-[13px] md:text-[16px]">Add a Spot</h3>
                 <p className="text-slate-500 text-[12px] md:text-[13px] font-medium hidden md:block">Share a new place</p>
               </div>
             </Link>
@@ -175,7 +175,7 @@ export default function Profile() {
               {/* Personal Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                 <div>
-                  <label htmlFor="username" className="block text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><User size={16} className="text-slate-400"/> Username</label>
+                  <label htmlFor="username" className="block text-[13px] md:text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><User size={16} className="text-slate-400"/> Username</label>
                   <input
                     type="text"
                     id="username"
@@ -186,7 +186,7 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="campus" className="block text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><MapPin size={16} className="text-slate-400"/> Campus</label>
+                  <label htmlFor="campus" className="block text-[13px] md:text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><MapPin size={16} className="text-slate-400"/> Campus</label>
                   <input
                     type="text"
                     id="campus"
@@ -203,7 +203,7 @@ export default function Profile() {
               {/* Account Security */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                 <div>
-                  <label htmlFor="email" className="block text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><Mail size={16} className="text-slate-400"/> Email</label>
+                  <label htmlFor="email" className="block text-[13px] md:text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><Mail size={16} className="text-slate-400"/> Email</label>
                   <input
                     type="email"
                     id="email"
@@ -213,7 +213,7 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><Lock size={16} className="text-slate-400"/> New Password</label>
+                  <label htmlFor="password" className="block text-[13px] md:text-[14px] font-bold text-slate-700 mb-2 flex items-center gap-2"><Lock size={16} className="text-slate-400"/> New Password</label>
                   <input
                     type="password"
                     id="password"
@@ -228,7 +228,7 @@ export default function Profile() {
               <button 
                 type="submit"
                 disabled={updating}
-                className="w-full bg-[#0f3915] hover:bg-[#0f3915] disabled:bg-[#dae2cb] text-white font-bold text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16px_rgba(15,57,21,0.4)] active:scale-[0.98] mt-4"
+                className="w-full bg-[#0f3915] hover:bg-[#0f3915] disabled:bg-[#dae2cb] text-white font-bold text-[15px] md:text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16px_rgba(15,57,21,0.4)] active:scale-[0.98] mt-4"
               >
                 {updating ? "Saving Changes..." : "Save Changes"}
               </button>

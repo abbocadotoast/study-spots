@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { StudySpot } from '../../lib/data';
 import { supabase } from '../../lib/supabase';
+import { API_BASE_URL } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 export default function Campus() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Campus() {
   const [username, setUsername] = useState<string | null>(null);
   const [savedSpotIds, setSavedSpotIds] = useState<number[]>([]);
 
-  const campuses = ['Boston College', 'Suffolk University'];
+  const campuses = ['Boston College', 'Sattler College', 'Suffolk University'];
 
   useEffect(() => {
     const fetchSpotsAndUser = async () => {
@@ -30,7 +31,7 @@ export default function Campus() {
         
         // Fetch saved spots
         try {
-          const savedRes = await fetch(`http://127.0.0.1:8000/users/${session.user.id}/saved`);
+          const savedRes = await fetch(`${API_BASE_URL}/users/${session.user.id}/saved`);
           const savedData = await savedRes.json();
           if (Array.isArray(savedData)) {
             setSavedSpotIds(savedData.map((s: any) => s.id));
@@ -41,7 +42,7 @@ export default function Campus() {
         setUsername(localUser);
         if (localUser) {
            try {
-            const savedRes = await fetch(`http://127.0.0.1:8000/users/${localUser}/saved`);
+            const savedRes = await fetch(`${API_BASE_URL}/users/${localUser}/saved`);
             const savedData = await savedRes.json();
             if (Array.isArray(savedData)) {
               setSavedSpotIds(savedData.map((s: any) => s.id));
@@ -51,7 +52,7 @@ export default function Campus() {
       }
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/spots");
+        const response = await fetch(`${API_BASE_URL}/spots`);
         const data = await response.json();
         setSpots(data);
       } catch (err) {
@@ -76,12 +77,12 @@ export default function Campus() {
     
     try {
       if (isSaved) {
-        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+        await fetch(`${API_BASE_URL}/users/${identifier}/saved/${spotId}`, {
           method: 'DELETE'
         });
         setSavedSpotIds(prev => prev.filter(id => id !== spotId));
       } else {
-        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+        await fetch(`${API_BASE_URL}/users/${identifier}/saved/${spotId}`, {
           method: 'POST'
         });
         setSavedSpotIds(prev => [...prev, spotId]);
@@ -92,11 +93,8 @@ export default function Campus() {
   };
 
   // Filter spots based on the selected campus
-  // We handle the edge case where older spots might not have a "campus" field,
-  // by treating empty/undefined as a match for 'Boston College' for legacy purposes,
-  // or simply matching what is on the string.
   const filteredSpots = spots.filter(spot => {
-    const spotCampus = spot.campus || 'Boston College';
+    const spotCampus = spot.campus;
     return spotCampus === selectedCampus;
   });
 

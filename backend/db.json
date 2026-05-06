@@ -3,20 +3,23 @@
         {
             "name": "Massachusetts State House Library",
             "image": "https://imgs.search.brave.com/gluiDJHrE5YC_MzJuqk4d-4TaVDC_WkU6DpG-5rKuPU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9m/L2ZhL1N0YXRlTGli/cmFyeVJlYWRpbmdS/b29tMjAxOS5qcGc",
-            "rating": 5.0,
+            "rating": 4.0,
             "location": "24 Beacon St, Boston, MA",
             "status": "Tues - Fri: 9:00 AM - 5:00 PM",
             "tags": [
-                "cool",
-                "lovely",
-                "One or two people"
+                "Quiet",
+                "Pretty",
+                "One or two people",
+                "Free Wifi",
+                "Outlets",
+                "Empty"
             ],
-            "occupancy": "Medium",
+            "occupancy": "Low",
             "campus": "Sattler College",
             "lat": 42.358602,
             "lng": -71.0638751,
-            "vibes": "very nice",
-            "info": "the library is super cool, i love this  place",
+            "vibes": "Bright, Pretty",
+            "info": "It's big with bright windows. It's pretty, the rest of the State House is even prettier. It's normally fairly empty, so you can find a spot easily. You do have to go through security to get in.",
             "id": 5
         },
         {
@@ -31,15 +34,77 @@
                 "Quiet",
                 "Free Wifi",
                 "Outlets",
-                "One or two people"
+                "One or two people",
+                "Open late"
             ],
             "occupancy": "Medium",
             "campus": "None",
             "lat": 42.3467494,
             "lng": -71.0796207,
             "vibes": "Calm, Lovely",
-            "info": "They have nice big tables and really comfy chairs. The coffee and drinks are always incredible, but the customer service is not very good. They are great for late nights as they are always open until 11 at night. They can be vey busy, especially in the afternoon. ",
+            "info": "They have nice big tables and really comfy chairs. The coffee and drinks are always incredible, but the customer service is not very good. They are great for late nights as they are always open until 11 at night. They can be very busy, especially in the afternoon.",
             "id": 6
+        },
+        {
+            "name": "Sewar House",
+            "image": "https://imgs.search.brave.com/bqGH6V2kiVb-rr7WLSjA8WXOB3oMw5hL880Z9ym9Jno/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jYW5h/ZGFsdXguY2Evd3At/Y29udGVudC91cGxv/YWRzLzIwMjUvMDYv/c2xpZGVyc18wMDAz/X1Nld2FyLTkwMHgz/NTYuanBn",
+            "rating": 5.0,
+            "location": " 3545 Odyssey Dr. Mississauga, ON",
+            "status": "8:00-12:00",
+            "tags": [
+                "Ritzy",
+                "Free Wifi",
+                "Outlets",
+                "Good for groups"
+            ],
+            "occupancy": "High",
+            "campus": "Boston College",
+            "lat": 43.5341785,
+            "lng": -79.7266238,
+            "vibes": "saudi vibes",
+            "info": "",
+            "id": 7
+        },
+        {
+            "name": "Grace's Room",
+            "image": "https://imgs.search.brave.com/y8cNLrnemxeW19heYQvKXXid2O_x4G9T4lbuNge7F9g/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ieXNv/cGhpYWxlZS5jb20v/d3AtY29udGVudC91/cGxvYWRzL2Rvcm0t/cm9vbS1pZGVhcy1n/aXJsLTIwMjEuanBl/Zw",
+            "rating": 5.0,
+            "location": "237 Beacon St, Boston, MA",
+            "status": "24/7",
+            "tags": [
+                "Adorable",
+                "Study people",
+                "Free Wifi",
+                "Outlets",
+                "One or two people"
+            ],
+            "occupancy": "High",
+            "campus": "Sattler College",
+            "lat": 42.3536506,
+            "lng": -71.078151,
+            "vibes": "very nice",
+            "info": "Love this spot, super cute people to study with.",
+            "id": 8
+        },
+        {
+            "name": "Jaho - Cambridge",
+            "image": "https://imgs.search.brave.com/y8cNLrnemxeW19heYQvKXXid2O_x4G9T4lbuNge7F9g/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ieXNv/cGhpYWxlZS5jb20v/d3AtY29udGVudC91/cGxvYWRzL2Rvcm0t/cm9vbS1pZGVhcy1n/aXJsLTIwMjEuanBl/Zw",
+            "rating": 5.0,
+            "location": "239 Massachusetts Ave., Cambridge, MA",
+            "status": "Mon - Fri: 6:30 A.M - 11:00 P.M. Sat - Sun: 7:00 A.M - 11:00 P.M.",
+            "tags": [
+                "Quiet",
+                "Free Wifi",
+                "Outlets",
+                "One or two people"
+            ],
+            "occupancy": "Medium",
+            "campus": "None",
+            "lat": 42.361726,
+            "lng": -71.0971222,
+            "vibes": "cool, a little nerdy, lots of phd students",
+            "info": "Love It, its super cool and quiet",
+            "id": 9
         }
     ],
     "users": {
@@ -56,8 +121,8 @@
         },
         "ef17d644-f421-43f9-8af2-2706faa4d2ce": {
             "saved_spots": [
-                5,
-                1
+                1,
+                6
             ]
         }
     }

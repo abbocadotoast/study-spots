@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import { Search, MapPin, Clock, Star, Map as MapIcon, Bookmark, Home as HomeIcon, User, Filter, Navigation, Plus, GraduationCap } from 'lucide-react';
 import { initialSpots, StudySpot } from '../lib/data';
 import { supabase } from '../lib/supabase';
+import { API_BASE_URL } from '../lib/api';
 
 const MapComponent = dynamic(() => import('../components/MapComponent'), { 
   ssr: false,
@@ -37,7 +38,7 @@ export default function Home() {
 
         // Fetch saved spot IDs for this user
         try {
-          const savedRes = await fetch(`http://127.0.0.1:8000/users/${session.user.id}/saved`);
+          const savedRes = await fetch(`${API_BASE_URL}/users/${session.user.id}/saved`);
           const savedData = await savedRes.json();
           if (Array.isArray(savedData)) {
             setSavedSpotIds(savedData.map((s: any) => s.id));
@@ -51,7 +52,7 @@ export default function Home() {
         setUsername(localUser);
         if (localUser) {
            try {
-            const savedRes = await fetch(`http://127.0.0.1:8000/users/${localUser}/saved`);
+            const savedRes = await fetch(`${API_BASE_URL}/users/${localUser}/saved`);
             const savedData = await savedRes.json();
             if (Array.isArray(savedData)) {
               setSavedSpotIds(savedData.map((s: any) => s.id));
@@ -75,7 +76,7 @@ export default function Home() {
       });
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/spots");
+        const response = await fetch(`${API_BASE_URL}/spots`);
         const data = await response.json();
         setStudySpots(data);
       } catch (err) {
@@ -98,7 +99,7 @@ export default function Home() {
 
   const handleBookmark = async (spotId: number) => {
     // Prefer Supabase ID, fallback to username for legacy
-    const identifier = userId || username;
+      const identifier = userId || username;
     
     if (!identifier) {
       router.push('/login');
@@ -110,13 +111,13 @@ export default function Home() {
     try {
       if (isSaved) {
         // Unsave logic
-        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+        await fetch(`${API_BASE_URL}/users/${identifier}/saved/${spotId}`, {
           method: 'DELETE'
         });
         setSavedSpotIds(prev => prev.filter(id => id !== spotId));
       } else {
         // Save logic
-        await fetch(`http://127.0.0.1:8000/users/${identifier}/saved/${spotId}`, {
+        await fetch(`${API_BASE_URL}/users/${identifier}/saved/${spotId}`, {
           method: 'POST'
         });
         setSavedSpotIds(prev => [...prev, spotId]);
@@ -155,7 +156,7 @@ export default function Home() {
           <div className="flex justify-between items-center w-full md:w-auto shrink-0">
             <div>
               <p className="text-slate-500 text-sm font-semibold mb-1 hidden md:block">Find Your Focus</p>
-              <h1 className="text-2xl md:text-[1.7rem] font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <h1 className="text-xl md:text-[1.7rem] font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                 <span className="md:hidden">Find Your Focus.</span>
                 <span className="hidden md:flex items-center gap-2.5">
                   <span className="h-8 w-8 bg-[#0f4f15] rounded-xl flex items-center justify-center shadow-lg shadow-[#0f4f15]/30">
@@ -247,9 +248,9 @@ export default function Home() {
 
           {/* Section title */}
           <div className="flex justify-between items-end mb-5 px-1 flex-wrap gap-4">
-            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Top spots nearby</h2>
+            <h2 className="text-lg md:text-2xl font-extrabold text-slate-900 tracking-tight">Top spots nearby</h2>
             <div className="flex items-center gap-3">
-              <Link href="/campus" className="text-[#0f4f15] bg-[#d1e8d3] text-[13px] md:text-[14px] font-bold hover:bg-[#0f4f15] hover:text-[#ffffff] px-3 py-1.5 md:py-2 rounded-xl transition-colors flex items-center gap-1.5">
+              <Link href="/campus" className="text-[12px] md:text-[14px] font-bold text-[#0f4f15] bg-[#d1e8d3] hover:bg-[#0f4f15] hover:text-[#ffffff] px-3 py-1.5 md:py-2 rounded-xl transition-colors flex items-center gap-1.5">
                 <GraduationCap size={16} strokeWidth={2.5} /> Campus
               </Link>
             </div>
@@ -269,24 +270,25 @@ export default function Home() {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
                     unoptimized 
+                    loading="eager"
                   />
                   
                   {/* Badges overlaying image */}
-                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
-                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                    <span className="text-[13px] font-bold text-slate-800">{spot.rating.toFixed(1)}</span>
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/95 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1 md:gap-1.5 shadow-sm border border-black/5">
+                    <Star className="w-3 h-3 md:w-3.5 md:h-3.5 text-amber-500 fill-amber-500" />
+                    <span className="text-[11px] md:text-[13px] font-bold text-slate-800">{spot.rating.toFixed(1)}</span>
                   </div>
                   
-                  <div className={`absolute bottom-3 right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                  <div className={`absolute bottom-2 right-2 md:bottom-3 md:right-3 transition-opacity ${savedSpotIds.includes(spot.id) ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
                     <button 
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleBookmark(spot.id); }} 
-                      className={`h-10 w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all border border-[#e6f2e7] ${
+                      className={`h-8 w-8 md:h-10 md:w-10 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center transition-all border border-[#e6f2e7] ${
                         savedSpotIds.includes(spot.id) 
                           ? 'bg-[#0f3915] text-white' 
                           : 'bg-white/80 text-slate-600 hover:bg-white hover:text-[#0f3915]'
                       }`}
                     >
-                      <Bookmark size={18} strokeWidth={2.5} fill={savedSpotIds.includes(spot.id) ? "currentColor" : "none"}/>
+                      <Bookmark className="w-4 h-4 md:w-[18px] md:h-[18px]" strokeWidth={2.5} fill={savedSpotIds.includes(spot.id) ? "currentColor" : "none"}/>
                     </button>
                   </div>
                 </div>
@@ -294,10 +296,10 @@ export default function Home() {
                 {/* Info Section for quick scanning */}
                 <div className="px-2 pb-2">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-extrabold text-slate-900 text-[18px] md:text-xl leading-tight line-clamp-1 pr-4 group-hover:text-[#0f3915] transition-colors">{spot.name}</h3>
+                    <h3 className="font-extrabold text-slate-900 text-base md:text-xl leading-tight line-clamp-1 pr-4 group-hover:text-[#0f3915] transition-colors">{spot.name}</h3>
                   </div>
                   
-                  <div className="flex items-center text-slate-500 text-[13px] md:text-[14px] font-semibold mb-4 gap-3">
+                  <div className="flex items-center text-slate-500 text-xs md:text-[14px] font-semibold mb-4 gap-3">
                     <span className="flex items-center gap-1.5 text-[#0f3915] bg-[#e6f2e7] px-2 py-0.5 rounded-md"><Clock size={14} /> {spot.status}</span>
                     <span className="flex items-center gap-1.5"><MapPin size={14} /> {spot.location}</span>
                   </div>
@@ -305,7 +307,7 @@ export default function Home() {
                   {/* Clear tags */}
                   <div className="flex flex-wrap gap-2 mt-1">
                     {spot.tags.slice(0, 3).map(tag => (
-                      <span key={tag} className="bg-slate-100 text-slate-600 text-[12px] md:text-[13px] font-bold px-3 py-1.5 rounded-[12px]">
+                      <span key={tag} className="bg-slate-100 text-slate-600 text-[11px] md:text-[13px] font-bold px-3 py-1.5 rounded-[12px]">
                         {tag}
                       </span>
                     ))}
@@ -332,16 +334,16 @@ export default function Home() {
 
       {/* Modern Floating Bottom Nav (Mobile Only) */}
       <nav className="fixed bottom-6 w-full px-6 md:hidden z-50">
-        <div className="bg-slate-900/95 backdrop-blur-xl rounded-[2rem] p-2 flex justify-between items-center shadow-2xl border border-slate-800">
-          <button onClick={() => window.location.reload()} className="flex flex-col items-center justify-center w-full py-2 bg-slate-800/80 rounded-2xl text-white transition-all">
+        <div className="bg-[#0f3915] backdrop-blur-xl rounded-[2rem] p-2 flex justify-between items-center shadow-2xl border border-slate-800">
+          <button onClick={() => window.location.reload()} className="flex flex-col items-center justify-center w-full py-2 bg-[#2b502e] rounded-2xl text-white transition-all">
             <HomeIcon className="h-5 w-5 mb-1" strokeWidth={2.5}/>
             <span className="text-[10px] font-bold tracking-wide">Home</span>
           </button>
-          <button className="flex flex-col items-center justify-center w-full py-2 text-slate-400 hover:text-white transition-all">
+          <Link href="/map" className="flex flex-col items-center justify-center w-full py-2 text-[#647b66] hover:text-white transition-all">
             <MapIcon className="h-5 w-5 mb-1" strokeWidth={2.5}/>
             <span className="text-[10px] font-bold tracking-wide">Map</span>
-          </button>
-          <button onClick={handleSavedClick} className="flex flex-col items-center justify-center w-full py-2 text-slate-400 hover:text-white transition-all">
+          </Link>
+          <button onClick={handleSavedClick} className="flex flex-col items-center justify-center w-full py-2 text-[#647b66] hover:text-white transition-all">
             <Bookmark className="h-5 w-5 mb-1" strokeWidth={2.5}/>
             <span className="text-[10px] font-bold tracking-wide">Saved</span>
           </button>

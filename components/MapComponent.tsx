@@ -31,7 +31,7 @@ function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }
   return null;
 }
 
-export default function MapComponent({ spots, center = [42.345, -71.12], zoom = 12 }: MapComponentProps) {
+export default function MapComponent({ spots, center = [42.355, -71.074], zoom = 14 }: MapComponentProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

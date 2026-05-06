@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Clock, Star, Bookmark } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Star, Bookmark, Map as MapIcon, Home as HomeIcon } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StudySpot } from '../../lib/data';
@@ -51,6 +51,10 @@ export default function SavedSpots() {
       console.error("Failed to unsave spot", err);
     }
   };
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+  }
 
   return (
     <div className="min-h-screen bg-[#F4F7FB] text-slate-800 font-sans pb-10">
@@ -111,6 +115,24 @@ export default function SavedSpots() {
           </div>
         )}
       </main>
+
+      {/* Modern Floating Bottom Nav (Mobile Only) */}
+      <nav className="fixed bottom-6 w-full px-6 md:hidden z-50">
+        <div className="bg-[#0f3915] backdrop-blur-xl rounded-[2rem] p-2 flex justify-between items-center shadow-2xl border border-slate-800">
+          <Link href="/" className="flex flex-col items-center justify-center w-full py-2 text-[#647b66] hover:text-white transition-all">
+            <HomeIcon className="h-5 w-5 mb-1" strokeWidth={2.5}/>
+            <span className="text-[10px] font-bold tracking-wide">Home</span>
+          </Link>
+          <Link href="/map" className="flex flex-col items-center justify-center w-full py-2 text-[#647b66] hover:text-white transition-all">
+            <MapIcon className="h-5 w-5 mb-1" strokeWidth={2.5}/>
+            <span className="text-[10px] font-bold tracking-wide">Map</span>
+          </Link>
+          <button onClick={() => window.location.reload()} className="flex flex-col items-center justify-center w-full py-2 bg-[#2b502e] rounded-2xl text-white transition-all">
+            <Bookmark className="h-5 w-5 mb-1" strokeWidth={2.5}/>
+            <span className="text-[10px] font-bold tracking-wide">Saved</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
