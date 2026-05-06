@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, use } from 'react';
-import { ArrowLeft, ChessQueen, MapPin, Clock, Star, Bookmark, Wifi, Plug, Users, Info, Flame } from 'lucide-react';
+import { ArrowLeft, ChessQueen, MapPin, Clock, Star, Bookmark, Wifi, Plug, Users, Info, Clock11, Armchair } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -26,7 +26,7 @@ export default function SpotDetails({ params }: { params: Promise<{ id: string }
 
   useEffect(() => {
     const fetchDetails = async () => {
-      // Auth check
+      // Authentication check
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUserId(session.user.id);
@@ -54,7 +54,8 @@ export default function SpotDetails({ params }: { params: Promise<{ id: string }
         }
       }
 
-      // Fetch spot
+      // Fetch the Study Spot Details
+      // Regardless of whether the user is logged in or not, fetch the actual data for the study spot they are trying to view.
       try {
         const response = await fetch(`${API_BASE_URL}/spots/${id}`);
         if (response.ok) {
@@ -115,6 +116,7 @@ export default function SpotDetails({ params }: { params: Promise<{ id: string }
           className="object-cover"
           priority
           unoptimized
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         
@@ -205,16 +207,6 @@ export default function SpotDetails({ params }: { params: Promise<{ id: string }
                   {spot.info || "No detailed information available for this spot yet. It's a great place to focus and get work done!"}
                 </p>
               </div>
-
-              {/* Vibe Section */}
-              <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100">
-                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <Flame size={16} className="text-[#0f3915]" /> The Vibe
-                </h3>
-                <p className="text-[#0f3915] text-lg font-bold italic">
-                  "{spot.vibes || "A perfect balance of focus and comfort."}"
-                </p>
-              </div>
             </div>
 
             {/* Amenities Grid */}
@@ -227,6 +219,8 @@ export default function SpotDetails({ params }: { params: Promise<{ id: string }
                       {tag.toLowerCase().includes('wifi') ? <Wifi size={18} /> : 
                        tag.toLowerCase().includes('outlet') ? <Plug size={18} /> : 
                        tag.toLowerCase().includes('group') ? <Users size={18} /> : 
+                       tag.toLowerCase().includes('open late') ? <Clock11 size={18} /> : 
+                       tag.toLowerCase().includes('comfy') ? <Armchair size={18} /> : 
                        <ChessQueen size={18} />}
                     </div>
                     <span className="font-bold text-slate-700 text-xs md:text-sm">{tag}</span>

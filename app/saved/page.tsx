@@ -13,6 +13,8 @@ export default function SavedSpots() {
   const [spots, setSpots] = useState<StudySpot[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // This useEffect fetches the user's saved spots when the component loads.
+  // It first ensures the user is logged in, and then makes an API request to the backend.
   useEffect(() => {
     const fetchSavedSpots = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -37,6 +39,8 @@ export default function SavedSpots() {
     fetchSavedSpots();
   }, [router]);
 
+  // handleUnsave is called when a user clicks the bookmark icon on a saved spot.
+  // It removes the spot from the database and updates the UI instantly by filtering it out.
   const handleUnsave = async (spotId: number) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) return;
@@ -85,7 +89,7 @@ export default function SavedSpots() {
               <Link key={spot.id} href={`/spots/${spot.id}`} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden block">
                 {/* Image Section */}
                 <div className="relative h-48 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
-                  <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized />
+                  <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized loading="eager" />
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>

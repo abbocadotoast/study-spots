@@ -144,7 +144,7 @@ export default function Campus() {
               <Link key={spot.id} href={`/spots/${spot.id}`} className="bg-white rounded-[2rem] p-3.5 shadow-sm border border-slate-200/50 hover:border-[#dae2cb] hover:shadow-md transition-all group overflow-hidden block">
                 {/* Image Section */}
                 <div className="relative h-48 w-full rounded-[1.5rem] overflow-hidden mb-4 bg-slate-100">
-                  <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized />
+                  <Image src={spot.image} alt={spot.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" unoptimized loading="eager"/>
                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-black/5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span className="text-[13px] font-bold text-slate-800">{spot.rating}</span>

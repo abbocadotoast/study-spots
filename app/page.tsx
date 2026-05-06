@@ -36,7 +36,7 @@ export default function Home() {
         setAvatarUrl(session.user.user_metadata?.avatar_url || null);
         setUserId(session.user.id);
 
-        // Fetch saved spot IDs for this user
+        // If a user is logged in, fetch the IDs of the study spots they have previously saved.
         try {
           const savedRes = await fetch(`${API_BASE_URL}/users/${session.user.id}/saved`);
           const savedData = await savedRes.json();
@@ -61,7 +61,8 @@ export default function Home() {
         }
       }
 
-      // Listen for auth changes
+      // Set up a real-time listener for changes.
+      // This ensures the UI stays perfectly in sync with the user's session without needing a page refresh.
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session) {
           setUsername(session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User');
@@ -75,6 +76,7 @@ export default function Home() {
         }
       });
 
+      // Fetch the list of all available study spots from the backend API.
       try {
         const response = await fetch(`${API_BASE_URL}/spots`);
         const data = await response.json();
@@ -91,14 +93,40 @@ export default function Home() {
     fetchUserAndSpots();
   }, []);
 
-  // Filter study spots based on activeFilter
+  // filteredSpots is a derived state variable. It takes the full list of studySpots and applies layers of filtering:
   const filteredSpots = studySpots.filter((spot) => {
-    if (activeFilter === 'All') return true;
-    return spot.tags.includes(activeFilter);
+    // 1. Filter by active tag
+    if (activeFilter !== 'All' && !spot.tags.includes(activeFilter)) {
+      return false;
+    }
+    
+    // 2. Filter by search query
+    if (searchQuery.trim() !== '') {
+      let query = searchQuery.toLowerCase().trim();
+      
+      // Handle "close to X" or "near X"
+      if (query.startsWith('close to ')) {
+        query = query.replace('close to ', '').trim();
+      } else if (query.startsWith('near ')) {
+        query = query.replace('near ', '').trim();
+      }
+
+      const matchName = spot.name.toLowerCase().includes(query);
+      const matchLocation = spot.location.toLowerCase().includes(query);
+      const matchCampus = spot.campus && spot.campus.toLowerCase().includes(query);
+      const matchAmenities = spot.tags.some(tag => tag.toLowerCase().includes(query));
+      
+      if (!matchName && !matchLocation && !matchCampus && !matchAmenities) {
+        return false;
+      }
+    }
+    
+    return true;
   });
 
+  // handleBookmark handles the logic when a user clicks the save (bookmark) icon on a spot card.
   const handleBookmark = async (spotId: number) => {
-    // Prefer Supabase ID, fallback to username for legacy
+    // Prefer the secure Supabase User ID. If not available, fallback to username.
       const identifier = userId || username;
     
     if (!identifier) {

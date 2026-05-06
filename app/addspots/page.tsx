@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 export default function AddSpot() {
   const router = useRouter();
   
-  // Local state for the form inputs
+  // Local state for the main form inputs matching the backend schema
   const [formData, setFormData] = useState({
     name: '',
     image: '',
@@ -18,11 +18,10 @@ export default function AddSpot() {
     tags: '',
     occupancy: 'Medium',
     campus: 'None',
-    vibes: '',
     info: ''
   });
 
-  // Amenity toggles
+  // Local state for specific amenity toggles (UI specific, converted to tags later)
   const [amenities, setAmenities] = useState({
     wifi: false,
     outlets: false,
@@ -31,6 +30,9 @@ export default function AddSpot() {
 
   const [isGeocoding, setIsGeocoding] = useState(false);
 
+  // getCoordinates uses the free Nominatim API (OpenStreetMap) to convert a user-provided address
+  // into latitude and longitude coordinates. This is necessary because our map component uses
+  // coordinates, not text addresses.
   const getCoordinates = async (address: string) => {
     try {
       const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
@@ -47,6 +49,9 @@ export default function AddSpot() {
     return { lat: 42.3601, lng: -71.0589 }; // Default to Boston if failed
   };
 
+  // handleSubmit is triggered when the "Add Study Spot" form is submitted.
+  // It handles geocoding the address, processing the tags, combining the data,
+  // and finally making a POST request to the FastAPI backend.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGeocoding(true);
@@ -57,7 +62,7 @@ export default function AddSpot() {
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
     
-    // Add amenity tags
+    // Combine manual tags and amenity toggles
     const amenityTags = [];
     if (amenities.wifi) amenityTags.push('Free Wifi');
     if (amenities.outlets) amenityTags.push('Outlets');
@@ -70,10 +75,10 @@ export default function AddSpot() {
       ? formData.image 
       : 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80'; 
       
-    // Geocoding
+    // Geocode the location string into latitude and longitude
     const coords = await getCoordinates(formData.location);
 
-    // Create new spot payload matching FastAPI schema
+    // Construct the final object to match the FastAPI backend schema
     const newSpot = {
       name: formData.name,
       image: image,
@@ -85,11 +90,10 @@ export default function AddSpot() {
       campus: formData.campus,
       lat: coords.lat,
       lng: coords.lng,
-      vibes: formData.vibes,
       info: formData.info
     };
     
-    // POST data to FastAPI backend
+    // Send the new spot data to the FastAPI backend
     try {
       const backendUrl = `http://${window.location.hostname}:8000`;
       await fetch(`${backendUrl}/spots`, {
@@ -333,21 +337,8 @@ export default function AddSpot() {
               </div>
             </div>
 
-            {/* Vibes & Info */}
+            {/* Info */}
             <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label htmlFor="vibes" className="block text-[14px] font-bold text-slate-700 mb-2">The Vibe</label>
-                <input
-                  type="text"
-                  id="vibes"
-                  name="vibes"
-                  value={formData.vibes}
-                  onChange={handleChange}
-                  placeholder="e.g. Minimalist, bustling, and cozy"
-                  className="w-full bg-slate-50 text-slate-900 rounded-2xl py-3.5 px-4 focus:outline-none focus:ring-[3px] focus:ring-[#e6f2e7] focus:bg-white transition-all text-[15px] font-medium border border-slate-200 shadow-inner focus:border-[#e6f2e7]"
-                />
-              </div>
-
               <div>
                 <label htmlFor="info" className="block text-[14px] font-bold text-slate-700 mb-2">About this spot</label>
                 <textarea

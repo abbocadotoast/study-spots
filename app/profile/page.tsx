@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, User, Mail, Lock, MapPin, Bookmark, Plus, Check } from 'lucide-react';
+import { ArrowLeft, User, Mail, Lock, MapPin, Bookmark, Plus, Check, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
@@ -37,6 +37,12 @@ export default function Profile() {
     fetchUser();
   }, [router]);
   
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem('username'); // Clear legacy login if present
+    router.push('/');
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
@@ -231,6 +237,15 @@ export default function Profile() {
                 className="w-full bg-[#0f3915] hover:bg-[#0f3915] disabled:bg-[#dae2cb] text-white font-bold text-[15px] md:text-[16px] py-4 rounded-2xl transition-colors shadow-[0_4px_12px_rgba(15,57,21,0.3)] hover:shadow-[0_6px_16px_rgba(15,57,21,0.4)] active:scale-[0.98] mt-4"
               >
                 {updating ? "Saving Changes..." : "Save Changes"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 bg-white hover:bg-red-50 text-red-500 font-bold text-[15px] md:text-[16px] py-4 rounded-2xl transition-colors border border-red-100 hover:border-red-200 mt-3"
+              >
+                <LogOut size={18} strokeWidth={2.5} />
+                Log Out
               </button>
             </form>
           </div>
