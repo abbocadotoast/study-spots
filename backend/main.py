@@ -19,9 +19,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize Supabase client
+# Initialize Supabase client with the service role key so that it bypasses
+# Row Level Security (RLS). This is safe because the key is only used
+# server-side in the backend and is never exposed to the browser.
 SUPABASE_URL: str = os.environ.get("SUPABASE_URL") or os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
-SUPABASE_KEY: str = os.environ.get("SUPABASE_KEY") or os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+SUPABASE_KEY: str = (
+    os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+    or os.environ.get("SUPABASE_KEY")
+    or os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+)
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY environment variables in Vercel")
