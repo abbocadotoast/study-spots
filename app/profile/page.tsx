@@ -251,7 +251,7 @@ export default function Profile() {
           </div>
         </div>
         <h3 className="text-slate-500 text-[12px] md:text-sm font-bold tracking-wider">For any questions or to edit or delete spots, contact me at abigailghoch2606@gmail.com</h3>
-        <h3 className="text-slate-500 text-[12px] md:text-sm font-bold tracking-wider">Happy Stuying!</h3>
+        <h3 className="text-slate-500 text-[12px] md:text-sm font-bold tracking-wider">Happy Studying!</h3>
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
