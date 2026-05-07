@@ -68,7 +68,8 @@ def get_spot(spot_id: int):
 # Adds a study spot to the database.
 @app.post("/spots")
 def create_spot(spot: Spot):
-    new_spot = spot.model_dump()
+    # Exclude 'vibes' since it doesn't exist as a column in the Supabase table
+    new_spot = spot.model_dump(exclude={"vibes"})
     
     # Supabase will handle the auto-incrementing ID.
     response = supabase.table("spots").insert(new_spot).execute()

@@ -96,11 +96,19 @@ export default function AddSpot() {
     
     // Send the new spot data to the FastAPI backend
     try {
-      await fetch(`${API_BASE_URL}/spots`, {
+      const response = await fetch(`${API_BASE_URL}/spots`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSpot),
       });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Backend error:", response.status, errorData);
+        alert(`Failed to add spot (${response.status}). ${errorData}`);
+        return;
+      }
+
       // Redirect to home page upon success
       router.push('/');
     } catch (err) {
