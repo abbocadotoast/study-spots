@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function AddSpot() {
   const router = useRouter();
@@ -95,8 +96,7 @@ export default function AddSpot() {
     
     // Send the new spot data to the FastAPI backend
     try {
-      const backendUrl = `http://${window.location.hostname}:8000`;
-      await fetch(`${backendUrl}/spots`, {
+      await fetch(`${API_BASE_URL}/spots`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSpot),

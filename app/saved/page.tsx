@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { StudySpot } from '../../lib/data';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
+import { API_BASE_URL } from '../../lib/api';
 
 export default function SavedSpots() {
   const router = useRouter();
@@ -25,8 +26,7 @@ export default function SavedSpots() {
       }
 
       try {
-        const backendUrl = `http://${window.location.hostname}:8000`;
-        const response = await fetch(`${backendUrl}/users/${session.user.id}/saved`);
+        const response = await fetch(`${API_BASE_URL}/users/${session.user.id}/saved`);
         const data = await response.json();
         setSpots(data);
       } catch (err) {
@@ -46,8 +46,7 @@ export default function SavedSpots() {
     if (!session?.user) return;
 
     try {
-      const backendUrl = `http://${window.location.hostname}:8000`;
-      await fetch(`${backendUrl}/users/${session.user.id}/saved/${spotId}`, {
+      await fetch(`${API_BASE_URL}/users/${session.user.id}/saved/${spotId}`, {
         method: 'DELETE'
       });
       setSpots(prev => prev.filter(s => s.id !== spotId));
